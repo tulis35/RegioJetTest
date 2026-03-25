@@ -13,7 +13,7 @@ import java.util.List;
 public class PokeApiClient {
 
     public List<Pokemon> listPokemon(int page) {
-        List<Pokemon> x = new ArrayList<>();
+        List<Pokemon> pokemonList = new ArrayList<>();
         try {
             URL url = new URL("https://pokeapi.co/api/v2/pokemon?limit=20&offset=0");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -35,17 +35,17 @@ public class PokeApiClient {
                 String name = node.get("name").asText();
                 Pokemon p = fetchPokemon(name);
                 if (p != null) {
-                    x.add(p);
+                    pokemonList.add(p);
                 }
             }
         } catch (Exception e) {
         }
-        return x;
+        return pokemonList;
     }
 
-    public Pokemon fetchPokemon(String name) {
+    public Pokemon fetchPokemon(String pokemonName) {
         try {
-            URL url = new URL("https://pokeapi.co/api/v2/pokemon/" + name.toLowerCase());
+            URL url = new URL("https://pokeapi.co/api/v2/pokemon/" + pokemonName.toLowerCase());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
 

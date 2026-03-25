@@ -24,7 +24,7 @@ public class Pokemon {
     }
 
     public String formatForDisplay() {
-        return String.format("%-15s | Height: %3d | Weight: %3d | Types: %-20s | XP: %d",
+        return String.format("%-15s | Height: %4d | Weight: %4d | Types: %-20s | XP: %d",
                 name, height, weight, types, baseExperience);
     }
 
