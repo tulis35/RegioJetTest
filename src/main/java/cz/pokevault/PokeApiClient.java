@@ -51,7 +51,7 @@ public class PokeApiClient {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
 
-            if (conn.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED) {
+            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 System.out.println("Something went wrong. HTTP code: " + conn.getResponseCode());
                 return null;
             }
