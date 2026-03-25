@@ -15,10 +15,11 @@ public class PokeApiClient {
     public List<Pokemon> listPokemon(int page) {
         List<Pokemon> pokemonList = new ArrayList<>();
         try {
-            URL url = new URL("https://pokeapi.co/api/v2/pokemon?limit=20&offset=0");
+            int offset = (page == 1) ? 0 : page * 10;
+            URL url = new URL("https://pokeapi.co/api/v2/pokemon?limit=20&offset=" + offset);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
-
+            
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             StringBuilder data = new StringBuilder();
             String temp;
