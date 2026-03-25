@@ -11,10 +11,12 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Welcome to PokeAPI CLI!");
 
-        Database.init();
-
         if (args.length == 0) {
             printHelp();
+            return;
+        }
+        if(args.length >= 4){
+            System.out.println(("Too many arguments!"));
             return;
         }
 
@@ -115,7 +117,7 @@ public class Main {
             System.out.println("Pokemon '" + name + "' not found.");
             return;
         }
-
+        Database.init();
         Database.save(p);
     }
 
@@ -124,6 +126,7 @@ public class Main {
     }
 
     private static void handlePokedex(String sort) {
+        Database.init();
         List<Pokemon> pokedex = Database.getAll(sort);
 
         if (pokedex.isEmpty()) {

@@ -33,6 +33,7 @@ public class Database {
             conn.createStatement().execute(sql);
             System.out.println("Added " + p.name + " to your Pokedex!");
         } catch (Exception e) {
+            System.out.println("Failed to save Pokemon to database: " + e.getMessage());
         }
     }
 
@@ -43,6 +44,7 @@ public class Database {
             conn.createStatement().execute(sql);
             System.out.println("Removed " + name + " from your Pokedex.");
         } catch (Exception e) {
+            System.out.println("Failed to remove Pokemon from database: " + e.getMessage());
         }
     }
 
@@ -63,6 +65,7 @@ public class Database {
                 list.add(p);
             }
         } catch (Exception e) {
+            System.out.println("Failed to get Pokemons from database: " + e.getMessage());
         }
         return list;
     }
@@ -83,6 +86,7 @@ public class Database {
                 return p;
             }
         } catch (Exception e) {
+            System.out.println("Failed to find Pokemon from database: " + e.getMessage());
         }
         return null;
     }

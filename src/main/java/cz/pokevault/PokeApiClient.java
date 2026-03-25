@@ -41,6 +41,7 @@ public class PokeApiClient {
                 }
             }
         } catch (Exception e) {
+            System.out.println("Failed to get Pokemons: " + e.getMessage());
         }
         return pokemonList;
     }
@@ -81,6 +82,7 @@ public class PokeApiClient {
 
             return p;
         } catch (Exception e) {
+            System.out.println("Failed to get Pokemon: " + e.getMessage());
             return null;
         }
     }
@@ -116,6 +118,7 @@ public class PokeApiClient {
                 }
             }
         } catch (Exception e) {
+            System.out.println("Failed to find Pokemon: " + e.getMessage());
         }
         return results;
     }
