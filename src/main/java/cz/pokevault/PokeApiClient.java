@@ -11,12 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PokeApiClient {
+    private static String POKEMON_API_URL = "https://pokeapi.co/api/v2/pokemon";
 
     public List<Pokemon> listPokemon(int page) {
         List<Pokemon> pokemonList = new ArrayList<>();
         try {
             int offset = (page == 1) ? 0 : page * 10;
-            URL url = new URL("https://pokeapi.co/api/v2/pokemon?limit=20&offset=" + offset);
+            URL url = new URL(POKEMON_API_URL + "?limit=20&offset=" + offset);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             
@@ -46,11 +47,12 @@ public class PokeApiClient {
 
     public Pokemon fetchPokemon(String pokemonName) {
         try {
-            URL url = new URL("https://pokeapi.co/api/v2/pokemon/" + pokemonName.toLowerCase());
+            URL url = new URL(POKEMON_API_URL + "/" + pokemonName.toLowerCase());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
 
-            if (conn.getResponseCode() == 404) {
+            if (conn.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED) {
+                System.out.println("Something went wrong. HTTP code: " + conn.getResponseCode());
                 return null;
             }
 
@@ -84,6 +86,9 @@ public class PokeApiClient {
     }
 
     public List<Pokemon> searchPokemon(String query) {
+        if(query == null || query.isBlank())
+            return new ArrayList<>();
+
         List<Pokemon> results = new ArrayList<>();
         try {
             URL url = new URL("https://pokeapi.co/api/v2/pokemon?limit=151&offset=0");
