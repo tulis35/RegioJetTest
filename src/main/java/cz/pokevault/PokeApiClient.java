@@ -59,7 +59,7 @@ public class PokeApiClient {
             }
 
             JsonNode root = getJSONFromRequest(conn.getInputStream());
-            if(root != null) {
+            if(root != null && !root.get("name").asText().isEmpty()) {
 
                 Pokemon p = new Pokemon();
                 p.name = root.get("name").asText();

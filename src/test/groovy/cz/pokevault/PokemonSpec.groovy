@@ -18,7 +18,7 @@ class PokemonSpec extends Specification {
         p.baseExperience = 62
 
         when:
-        p.saveToDatabase()
+        Database.save(p)
 
         then:
         noExceptionThrown()

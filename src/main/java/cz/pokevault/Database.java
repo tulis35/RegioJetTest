@@ -5,6 +5,7 @@ import groovy.lang.GString;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,10 @@ public class Database {
 
     public static void init() {
         try {
-            Connection conn = DriverManager.getConnection("jdbc:sqlite:pokedex.db");
+            Connection conn = getConnection();
+            if(conn == null)
+                return;
+
             String sql = "CREATE TABLE IF NOT EXISTS pokedex (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "name TEXT, " +
@@ -28,32 +32,70 @@ public class Database {
     }
 
     public static void save(Pokemon p) {
+        if(p == null || p.name == null || p.name.isEmpty())
+        {
+            System.out.println("Invalid Pokemon parameters!");
+            return;
+        }
+        Connection conn = null;
         try {
-            Connection conn = DriverManager.getConnection("jdbc:sqlite:pokedex.db");
-            String sql = "INSERT INTO pokedex (name, height, weight, types, base_experience) VALUES ('"
-                    + p.name + "', " + p.height + ", " + p.weight + ", '" + p.types + "', " + p.baseExperience + ")";
+            conn = getConnection();
+            if(conn == null)
+                return;
+
+            String sql;
+            if(findByName(p.name) != null)
+                sql = String.format("UPDATE pokedex SET height = %d, weight = %d, types = '%s', base_experience = %d WHERE name = '%s'",
+                        p.height, p.weight, p.types, p.baseExperience, p.name);
+            else
+                sql = "INSERT INTO pokedex (name, height, weight, types, base_experience) VALUES ('"
+                        + p.name + "', " + p.height + ", " + p.weight + ", '" + p.types + "', " + p.baseExperience + ")";
             conn.createStatement().execute(sql);
             System.out.println("Added " + p.name + " to your Pokedex!");
         } catch (Exception e) {
             System.out.println("Failed to save Pokemon to database: " + e.getMessage());
         }
+        finally {
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                System.out.println("Error when closing SQL connection: " + e.getMessage());
+            }
+        }
     }
 
     public static void remove(String name) {
+        Connection conn = null;
         try {
-            Connection conn = DriverManager.getConnection("jdbc:sqlite:pokedex.db");
+            conn = getConnection();
+            if(conn == null)
+                return;
+
             String sql = "DELETE FROM pokedex WHERE name = '" + name + "'";
             conn.createStatement().execute(sql);
             System.out.println("Removed " + name + " from your Pokedex.");
         } catch (Exception e) {
             System.out.println("Failed to remove Pokemon from database: " + e.getMessage());
         }
+        finally {
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                System.out.println("Error when closing SQL connection: " + e.getMessage());
+            }
+        }
     }
 
     public static List<Pokemon> getAll(String sortOrder) {
         List<Pokemon> list = new ArrayList<>();
+        Connection conn = null;
         try {
-            Connection conn = DriverManager.getConnection("jdbc:sqlite:pokedex.db");
+            conn = getConnection();
+            if(conn == null)
+                return list;
+
             String sql = "SELECT * FROM pokedex ORDER BY name " + sortOrder.toUpperCase();
             ResultSet rs = conn.createStatement().executeQuery(sql);
             while (rs.next()) {
@@ -69,13 +111,25 @@ public class Database {
         } catch (Exception e) {
             System.out.println("Failed to get Pokemons from database: " + e.getMessage());
         }
+        finally {
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                System.out.println("Error when closing SQL connection: " + e.getMessage());
+            }
+        }
         return list;
     }
 
-    public static Pokemon findByName(String name) {
+    public static Pokemon findByName(String name){
+        Connection conn = null;
         try {
-            Connection conn = DriverManager.getConnection("jdbc:sqlite:pokedex.db");
-            String sql = "SELECT TOP 1 * FROM pokedex WHERE name LIKE '" + name + "'";
+            conn = getConnection();
+            if(conn == null)
+                return null;
+
+            String sql = "SELECT * FROM pokedex WHERE name LIKE '" + name + "'" + " LIMIT 1";
             ResultSet rs = conn.createStatement().executeQuery(sql);
             if (rs.next()) {
                 Pokemon p = new Pokemon();
@@ -89,7 +143,23 @@ public class Database {
             }
         } catch (Exception e) {
             System.out.println("Failed to find Pokemon from database: " + e.getMessage());
+        }finally {
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                System.out.println("Error when closing SQL connection: " + e.getMessage());
+            }
         }
         return null;
+    }
+
+    private static Connection getConnection(){
+        try {
+            return DriverManager.getConnection("jdbc:sqlite:pokedex.db");
+        }catch (Exception e){
+            System.out.println("Failed to initialize SQL connection: " + e.getMessage());
+            return null;
+        }
     }
 }
