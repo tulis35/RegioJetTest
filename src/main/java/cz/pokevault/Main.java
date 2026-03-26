@@ -112,6 +112,7 @@ public class Main {
     }
 
     private static void handleAdd(String name) {
+        name = name.trim();
         System.out.println("Looking up " + name + "...");
         Pokemon p = client.fetchPokemon(name);
 
@@ -124,10 +125,11 @@ public class Main {
     }
 
     private static void handleRemove(String name) {
-        Database.remove(name);
+        Database.remove(name.trim().toLowerCase());
     }
 
     private static void handlePokedex(String sort) {
+        sort = sort.trim();
         Database.init();
         List<Pokemon> pokedex = Database.getAll(sort);
 
@@ -144,6 +146,7 @@ public class Main {
     }
 
     private static void handleInfo(String name) {
+        name = name.trim();
         System.out.println("Fetching info for: " + name);
         Pokemon p = client.fetchPokemon(name);
 

@@ -107,16 +107,6 @@ public class PokeApiClient {
                         results.add(p);
                     }
                 }
-                /*
-                for (JsonNode node : root.get("results")) {
-                    String name = node.get("name").asText();
-                    if (name.contains(query.toLowerCase())) {
-                        Pokemon p = fetchPokemon(name);
-                        if (p != null) {
-                            results.add(p);
-                        }
-                    }
-                }*/
             }
         } catch (Exception e) {
             System.out.println("Failed to find Pokemon: " + e.getMessage());

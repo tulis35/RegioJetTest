@@ -1,5 +1,7 @@
 package cz.pokevault;
 
+import groovy.lang.GString;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -52,7 +54,7 @@ public class Database {
         List<Pokemon> list = new ArrayList<>();
         try {
             Connection conn = DriverManager.getConnection("jdbc:sqlite:pokedex.db");
-            String sql = "SELECT * FROM pokedex ORDER BY name " + sortOrder;
+            String sql = "SELECT * FROM pokedex ORDER BY name " + sortOrder.toUpperCase();
             ResultSet rs = conn.createStatement().executeQuery(sql);
             while (rs.next()) {
                 Pokemon p = new Pokemon();
@@ -73,7 +75,7 @@ public class Database {
     public static Pokemon findByName(String name) {
         try {
             Connection conn = DriverManager.getConnection("jdbc:sqlite:pokedex.db");
-            String sql = "SELECT * FROM pokedex WHERE name LIKE '" + name + "'";
+            String sql = "SELECT TOP 1 * FROM pokedex WHERE name LIKE '" + name + "'";
             ResultSet rs = conn.createStatement().executeQuery(sql);
             if (rs.next()) {
                 Pokemon p = new Pokemon();
