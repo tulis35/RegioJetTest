@@ -20,7 +20,8 @@ public class Main {
             return;
         }
 
-        String command = args[0];
+        Database.init();
+        String command = args[0].trim();
 
         if (command.equalsIgnoreCase("list")) {
             int page = 1;
@@ -112,15 +113,17 @@ public class Main {
     }
 
     private static void handleAdd(String name) {
-        name = name.trim();
+        String trimmedName = name.trim();
         System.out.println("Looking up " + name + "...");
-        Pokemon p = client.fetchPokemon(name);
+        Pokemon p = cache.stream().filter(poke -> poke.name.equalsIgnoreCase(trimmedName)).findFirst().orElse(null);
+        if(p == null)
+           p = client.fetchPokemon(name);
 
         if (p == null) {
             System.out.println("Pokemon '" + name + "' not found.");
             return;
         }
-        Database.init();
+
         Database.save(p);
     }
 
@@ -130,7 +133,7 @@ public class Main {
 
     private static void handlePokedex(String sort) {
         sort = sort.trim();
-        Database.init();
+
         List<Pokemon> pokedex = Database.getAll(sort);
 
         if (pokedex.isEmpty()) {
