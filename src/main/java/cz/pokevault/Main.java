@@ -66,6 +66,8 @@ public class Main {
         if(p == null)
            p = client.fetchPokemon(trimmedName);
 
+        cache.add(p);
+
         if (p == null) {
             System.out.println("Pokemon '" + trimmedName + "' not found.");
             return;
@@ -96,12 +98,16 @@ public class Main {
     }
 
     private static void handleInfo(String name) {
-        name = name.trim();
-        System.out.println("Fetching info for: " + name);
-        Pokemon p = client.fetchPokemon(name);
+        String trimmedName = name.trim();
+        System.out.println("Fetching info for: " + trimmedName);
+        Pokemon p = cache.stream().filter(poke -> poke.name.equalsIgnoreCase(trimmedName)).findFirst().orElse(null);
+        if(p == null)
+            p = client.fetchPokemon(trimmedName);
+
+        cache.add(p);
 
         if (p == null) {
-            System.out.println("Pokemon '" + name + "' not found.");
+            System.out.println("Pokemon '" + trimmedName + "' not found.");
             return;
         }
 
@@ -121,6 +127,7 @@ public class Main {
         System.out.println("  remove <name>             Remove from Pokedex");
         System.out.println("  pokedex [--sort asc|desc] Show your Pokedex");
         System.out.println("  info <name>               Show Pokemon details");
+        System.out.println("  Interactive               Launch interactive mode");
     }
 
     private static void dumpCache() {
@@ -177,6 +184,7 @@ public class Main {
 
         } else if (command.equalsIgnoreCase("info")) {
             if (args.length < 2) {
+                System.out.println("Missing Pokemon name!");
                 System.out.println("Usage: info <name>");
                 System.exit(1);
             }
