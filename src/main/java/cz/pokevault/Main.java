@@ -96,6 +96,7 @@ public class Main {
     }
 
     private static void handleSearch(String query) {
+        query = query.trim();
         System.out.println("Searching for: " + query);
         List<Pokemon> results = client.searchPokemon(query);
 

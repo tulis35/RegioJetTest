@@ -2,6 +2,7 @@ package cz.pokevault;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -10,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 public class PokeApiClient {
     private static String POKEMON_API_URL = "https://pokeapi.co/api/v2/pokemon";
@@ -86,13 +88,26 @@ public class PokeApiClient {
 
         List<Pokemon> results = new ArrayList<>();
         try {
-            URL url = new URL(POKEMON_API_URL + "?limit=151&offset=0");
+            URL url = new URL(POKEMON_API_URL + "?limit=10000&offset=0");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
 
             JsonNode root = getJSONFromRequest(conn.getInputStream());
 
             if(root != null) {
+                ArrayNode node = (ArrayNode)root.get("results");
+                List<String> result = StreamSupport.stream(node.spliterator(), false)
+                        .filter(p -> p.get("name").asText().contains(query.toLowerCase()))
+                        .map(p -> p.get("name").asText())
+                        .toList();
+
+                for(String name : result){
+                    Pokemon p = fetchPokemon(name);
+                    if (p != null) {
+                        results.add(p);
+                    }
+                }
+                /*
                 for (JsonNode node : root.get("results")) {
                     String name = node.get("name").asText();
                     if (name.contains(query.toLowerCase())) {
@@ -101,7 +116,7 @@ public class PokeApiClient {
                             results.add(p);
                         }
                     }
-                }
+                }*/
             }
         } catch (Exception e) {
             System.out.println("Failed to find Pokemon: " + e.getMessage());
