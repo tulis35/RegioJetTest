@@ -18,16 +18,16 @@ public class Database {
                 return;
 
             String sql = "CREATE TABLE IF NOT EXISTS pokedex (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "name TEXT, " +
-                    "height INTEGER, " +
-                    "weight INTEGER, " +
-                    "types TEXT, " +
-                    "base_experience INTEGER)";
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    "name TEXT NOT NULL, " +
+                    "height INTEGER NOT NULL, " +
+                    "weight INTEGER NOT NULL, " +
+                    "types TEXT NOT NULL, " +
+                    "base_experience INTEGER NOT NULL)";
             conn.createStatement().execute(sql);
             System.out.println("Database initialized");
         } catch (Exception e) {
-            System.out.println("Failed to init database: " + e.getMessage());
+            System.out.println("Failed to initialize database: " + e.getMessage());
         }
     }
 
@@ -68,6 +68,11 @@ public class Database {
     public static void remove(String name) {
         Connection conn = null;
         try {
+            if(findByName(name) == null){
+                System.out.println("Pokemon not found in database!");
+                return;
+            }
+
             conn = getConnection();
             if(conn == null)
                 return;
