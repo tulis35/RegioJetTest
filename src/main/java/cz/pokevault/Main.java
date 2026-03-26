@@ -22,9 +22,9 @@ public class Main {
 
         String command = args[0];
 
-        if (command.equals("list")) {
+        if (command.equalsIgnoreCase("list")) {
             int page = 1;
-            if (args.length > 2 && args[1].equals("--page")) {
+            if (args.length > 2 && args[1].equalsIgnoreCase("--page")) {
                 try {
                     page = Integer.parseInt(args[2]);
                 } catch (NumberFormatException e) {
@@ -34,35 +34,36 @@ public class Main {
             }
             handleList(page);
 
-        } else if (command.equals("search")) {
+        } else if (command.equalsIgnoreCase("search")) {
             if (args.length < 2) {
                 System.out.println("Usage: search <name>");
                 System.exit(1);
             }
             handleSearch(args[1]);
 
-        } else if (command.equals("add")) {
+        } else if (command.equalsIgnoreCase("add")) {
             if (args.length < 2) {
                 System.out.println("Usage: add <name>");
                 System.exit(1);
             }
             handleAdd(args[1]);
 
-        } else if (command.equals("remove")) {
+        } else if (command.equalsIgnoreCase("remove")) {
             if (args.length < 2) {
                 System.out.println("Usage: remove <name>");
                 System.exit(1);
             }
             handleRemove(args[1]);
 
-        } else if (command.equals("pokedex")) {
+        } else if (command.equalsIgnoreCase("pokedex")) {
             String sort = "asc";
-            if (args.length > 2 && args[1].equals("--sort")) {
-                sort = args[2];
-            }
+            if (args.length > 2 && args[1].equalsIgnoreCase("--sort"))
+                if(args[2].equalsIgnoreCase("asc") || args[2].equalsIgnoreCase("desc"))
+                    sort = args[2];
+
             handlePokedex(sort);
 
-        } else if (command.equals("info")) {
+        } else if (command.equalsIgnoreCase("info")) {
             if (args.length < 2) {
                 System.out.println("Usage: info <name>");
                 System.exit(1);
