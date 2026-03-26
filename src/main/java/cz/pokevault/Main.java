@@ -2,6 +2,7 @@ package cz.pokevault;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
 
@@ -21,61 +22,7 @@ public class Main {
         }
 
         Database.init();
-        String command = args[0].trim();
-
-        if (command.equalsIgnoreCase("list")) {
-            int page = 1;
-            if (args.length > 2 && args[1].equalsIgnoreCase("--page")) {
-                try {
-                    page = Integer.parseInt(args[2]);
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid page number");
-                    System.exit(1);
-                }
-            }
-            handleList(page);
-
-        } else if (command.equalsIgnoreCase("search")) {
-            if (args.length < 2) {
-                System.out.println("Usage: search <name>");
-                System.exit(1);
-            }
-            handleSearch(args[1]);
-
-        } else if (command.equalsIgnoreCase("add")) {
-            if (args.length < 2) {
-                System.out.println("Usage: add <name>");
-                System.exit(1);
-            }
-            handleAdd(args[1]);
-
-        } else if (command.equalsIgnoreCase("remove")) {
-            if (args.length < 2) {
-                System.out.println("Usage: remove <name>");
-                System.exit(1);
-            }
-            handleRemove(args[1]);
-
-        } else if (command.equalsIgnoreCase("pokedex")) {
-            String sort = "asc";
-            if (args.length > 2 && args[1].equalsIgnoreCase("--sort"))
-                if(args[2].equalsIgnoreCase("asc") || args[2].equalsIgnoreCase("desc"))
-                    sort = args[2];
-
-            handlePokedex(sort);
-
-        } else if (command.equalsIgnoreCase("info")) {
-            if (args.length < 2) {
-                System.out.println("Usage: info <name>");
-                System.exit(1);
-            }
-            handleInfo(args[1]);
-
-        } else {
-            System.out.println("Unknown command: " + command);
-            printHelp();
-            System.exit(1);
-        }
+        handleArguments(args);
     }
 
     private static void handleList(int page) {
@@ -114,13 +61,13 @@ public class Main {
 
     private static void handleAdd(String name) {
         String trimmedName = name.trim();
-        System.out.println("Looking up " + name + "...");
+        System.out.println("Looking up " + trimmedName + "...");
         Pokemon p = cache.stream().filter(poke -> poke.name.equalsIgnoreCase(trimmedName)).findFirst().orElse(null);
         if(p == null)
-           p = client.fetchPokemon(name);
+           p = client.fetchPokemon(trimmedName);
 
         if (p == null) {
-            System.out.println("Pokemon '" + name + "' not found.");
+            System.out.println("Pokemon '" + trimmedName + "' not found.");
             return;
         }
 
@@ -180,20 +127,84 @@ public class Main {
         System.out.println("Cache dump:");
         for (Pokemon p : cache) {
             System.out.println(p);
+            cache.remove(p);
         }
     }
 
-    /*
-     * TODO: implement interactive mode
-     *
-     * public static void runInteractive() {
-     *     Scanner scanner = new Scanner(System.in);
-     *     while (true) {
-     *         System.out.print("> ");
-     *         String line = scanner.nextLine();
-     *         if (line.equals("exit")) break;
-     *         // parse and dispatch...
-     *     }
-     * }
-     */
+    private static void handleArguments(String[] args){
+        String command = args[0].trim();
+
+        if (command.equalsIgnoreCase("list")) {
+            int page = 1;
+            if (args.length > 2 && args[1].equalsIgnoreCase("--page")) {
+                try {
+                    page = Integer.parseInt(args[2]);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid page number");
+                    System.exit(1);
+                }
+            }
+            handleList(page);
+
+        } else if (command.equalsIgnoreCase("search")) {
+            if (args.length < 2) {
+                System.out.println("Usage: search <name>");
+                System.exit(1);
+            }
+            handleSearch(args[1]);
+
+        } else if (command.equalsIgnoreCase("add")) {
+            if (args.length < 2) {
+                System.out.println("Usage: add <name>");
+                System.exit(1);
+            }
+            handleAdd(args[1]);
+
+        } else if (command.equalsIgnoreCase("remove")) {
+            if (args.length < 2) {
+                System.out.println("Usage: remove <name>");
+                System.exit(1);
+            }
+            handleRemove(args[1]);
+
+        } else if (command.equalsIgnoreCase("pokedex")) {
+            String sort = "asc";
+            if (args.length > 2 && args[1].equalsIgnoreCase("--sort"))
+                if(args[2].equalsIgnoreCase("asc") || args[2].equalsIgnoreCase("desc"))
+                    sort = args[2];
+
+            handlePokedex(sort);
+
+        } else if (command.equalsIgnoreCase("info")) {
+            if (args.length < 2) {
+                System.out.println("Usage: info <name>");
+                System.exit(1);
+            }
+            handleInfo(args[1]);
+
+        } else if (command.equalsIgnoreCase("interactive")){
+            runInteractive();
+        }
+        else {
+            System.out.println("Unknown command: " + command);
+            printHelp();
+            System.exit(1);
+        }
+    }
+
+
+    public static void runInteractive() {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.print("> ");
+            String line = scanner.nextLine().trim();
+            if (line.equalsIgnoreCase("exit")) break;
+            else if(line.equalsIgnoreCase("interactive")){
+                System.out.println("Already in interactive mode!");
+                System.out.println("> ");
+            }else
+                handleArguments(line.split(" "));
+        }
+    }
+
 }
