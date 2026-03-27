@@ -2,10 +2,7 @@ package cz.pokevault;
 
 import groovy.lang.GString;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,13 +41,25 @@ public class Database {
                 return;
 
             String sql;
-            if(findByName(p.name) != null)
-                sql = String.format("UPDATE pokedex SET height = %d, weight = %d, types = '%s', base_experience = %d WHERE name = '%s'",
-                        p.height, p.weight, p.types, p.baseExperience, p.name);
-            else
-                sql = "INSERT INTO pokedex (name, height, weight, types, base_experience) VALUES ('"
-                        + p.name + "', " + p.height + ", " + p.weight + ", '" + p.types + "', " + p.baseExperience + ")";
-            conn.createStatement().execute(sql);
+            PreparedStatement stmt = null;
+            if(findByName(p.name) != null) {
+                sql = "UPDATE pokedex SET height = ?, weight = ?, types = ?, base_experience = ? WHERE name = ?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, p.height);
+                stmt.setInt(2, p.weight);
+                stmt.setString(3, p.types);
+                stmt.setInt(4, p.baseExperience);
+                stmt.setString(5, p.name);
+            }else {
+                sql = "INSERT INTO pokedex (name, height, weight, types, base_experience) VALUES (?,?,?,?,?)";
+                stmt = conn.prepareStatement(sql);
+                stmt.setString(1, p.name);
+                stmt.setInt(2, p.height);
+                stmt.setInt(3, p.weight);
+                stmt.setString(4, p.types);
+                stmt.setInt(5, p.baseExperience);
+            }
+            stmt.execute();
             System.out.println("Added " + p.name + " to your Pokedex!");
         } catch (Exception e) {
             System.out.println("Failed to save Pokemon to database: " + e.getMessage());
@@ -77,8 +86,10 @@ public class Database {
             if(conn == null)
                 return;
 
-            String sql = "DELETE FROM pokedex WHERE name = '" + name + "'";
-            conn.createStatement().execute(sql);
+            String sql = "DELETE FROM pokedex WHERE name = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, name);
+            stmt.execute();
             System.out.println("Removed " + name + " from your Pokedex.");
         } catch (Exception e) {
             System.out.println("Failed to remove Pokemon from database: " + e.getMessage());
@@ -95,33 +106,35 @@ public class Database {
 
     public static List<Pokemon> getAll(String sortOrder) {
         List<Pokemon> list = new ArrayList<>();
-        Connection conn = null;
-        try {
-            conn = getConnection();
-            if(conn == null)
-                return list;
-
-            String sql = "SELECT * FROM pokedex ORDER BY name " + sortOrder.toUpperCase();
-            ResultSet rs = conn.createStatement().executeQuery(sql);
-            while (rs.next()) {
-                Pokemon p = new Pokemon();
-                p.id = rs.getInt("id");
-                p.name = rs.getString("name");
-                p.height = rs.getInt("height");
-                p.weight = rs.getInt("weight");
-                p.types = rs.getString("types");
-                p.baseExperience = rs.getInt("base_experience");
-                list.add(p);
-            }
-        } catch (Exception e) {
-            System.out.println("Failed to get Pokemons from database: " + e.getMessage());
-        }
-        finally {
+        if(sortOrder.equalsIgnoreCase("asc") || sortOrder.equalsIgnoreCase("desc")) {
+            Connection conn = null;
             try {
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException e) {
-                System.out.println("Error when closing SQL connection: " + e.getMessage());
+                conn = getConnection();
+                if (conn == null)
+                    return list;
+
+                String sql = "SELECT * FROM pokedex ORDER BY name " + sortOrder.toUpperCase();
+                ResultSet rs = conn.createStatement().executeQuery(sql);
+                while (rs.next()) {
+                    Pokemon p = new Pokemon();
+                    p.id = rs.getInt("id");
+                    p.name = rs.getString("name");
+                    p.height = rs.getInt("height");
+                    p.weight = rs.getInt("weight");
+                    p.types = rs.getString("types");
+                    p.baseExperience = rs.getInt("base_experience");
+                    list.add(p);
+                }
+                rs.close();
+            } catch (Exception e) {
+                System.out.println("Failed to get Pokemons from database: " + e.getMessage());
+            } finally {
+                try {
+                    if (conn != null)
+                        conn.close();
+                } catch (SQLException e) {
+                    System.out.println("Error when closing SQL connection: " + e.getMessage());
+                }
             }
         }
         return list;
@@ -134,8 +147,10 @@ public class Database {
             if(conn == null)
                 return null;
 
-            String sql = "SELECT * FROM pokedex WHERE name LIKE '" + name + "'" + " LIMIT 1";
-            ResultSet rs = conn.createStatement().executeQuery(sql);
+            String sql = "SELECT * FROM pokedex WHERE name LIKE ? LIMIT 1";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, "%" + name + "%");
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 Pokemon p = new Pokemon();
                 p.id = rs.getInt("id");
@@ -144,6 +159,7 @@ public class Database {
                 p.weight = rs.getInt("weight");
                 p.types = rs.getString("types");
                 p.baseExperience = rs.getInt("base_experience");
+                rs.close();
                 return p;
             }
         } catch (Exception e) {
