@@ -150,6 +150,8 @@ public class Main {
                     System.out.println("Invalid page number");
                     System.exit(1);
                 }
+            }else if(args.length == 2){
+                System.out.println("Missing page number or '--page' argument.");
             }
             handleList(page);
 
