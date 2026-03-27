@@ -22,12 +22,12 @@ public class Pokemon {
     }
 
     public Pokemon(int id, String name, int height, int weight, String types, int baseExperience){
-        this.id = -1;
-        this.name = "";
-        this.height = 0;
-        this.weight = 0;
-        this.types = "";
-        this.baseExperience = 0;
+        this.id = id;
+        this.name = name.trim();
+        this.height = (height < 0) ? 0 : height;
+        this.weight = (weight < 0) ? 0 : weight;
+        this.types = types.trim();
+        this.baseExperience = (baseExperience < 0) ? 0 : baseExperience;
     }
 
     public int getId(){
