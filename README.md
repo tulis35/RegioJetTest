@@ -37,14 +37,16 @@ mvn exec:java -Dexec.args="<command> [options]"
 
 ## Commands
 
-| Command | Description |
-|---|---|
-| `list [--page N]` | List Pokemon from PokeAPI |
-| `search <name>` | Search Pokemon by name |
-| `add <name>` | Add a Pokemon to your personal Pokedex |
-| `remove <name>` | Remove a Pokemon from your Pokedex |
-| `pokedex [--sort asc\|desc]` | Show your Pokedex (default sort: asc) |
-| `info <name>` | Show full details for a Pokemon |
+| Command                      | Description                            |
+|------------------------------|----------------------------------------|
+| `list [--page N]`            | List Pokemon from PokeAPI              |
+| `search <name>`              | Search Pokemon by name                 |
+| `add <name>`                 | Add a Pokemon to your personal Pokedex |
+| `remove <name>`              | Remove a Pokemon from your Pokedex     |
+| `pokedex [--sort asc\|desc]` | Show your Pokedex (default sort: asc)  |
+| `info <name>`                | Show full details for a Pokemon        |
+| `interactive`                | Launches CLI in interctive mode        |
+
 
 ### Examples
 
@@ -66,6 +68,9 @@ java -jar target/pokevault-1.0-SNAPSHOT.jar info mewtwo
 
 # Remove a Pokemon
 java -jar target/pokevault-1.0-SNAPSHOT.jar remove pikachu
+
+# Run Interctive mode
+java -jar target/pokevault-1.0-SNAPSHOT.jar interactive
 ```
 
 ---

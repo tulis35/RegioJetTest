@@ -2,6 +2,7 @@ package cz.pokevault;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
 
@@ -11,67 +12,17 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Welcome to PokeAPI CLI!");
 
-        Database.init();
-
         if (args.length == 0) {
             printHelp();
             return;
         }
-
-        String command = args[0];
-
-        if (command.equals("list")) {
-            int page = 1;
-            if (args.length > 2 && args[1].equals("--page")) {
-                try {
-                    page = Integer.parseInt(args[2]);
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid page number");
-                    System.exit(1);
-                }
-            }
-            handleList(page);
-
-        } else if (command.equals("search")) {
-            if (args.length < 2) {
-                System.out.println("Usage: search <name>");
-                System.exit(1);
-            }
-            handleSearch(args[1]);
-
-        } else if (command.equals("add")) {
-            if (args.length < 2) {
-                System.out.println("Usage: add <name>");
-                System.exit(1);
-            }
-            handleAdd(args[1]);
-
-        } else if (command.equals("remove")) {
-            if (args.length < 2) {
-                System.out.println("Usage: remove <name>");
-                System.exit(1);
-            }
-            handleRemove(args[1]);
-
-        } else if (command.equals("pokedex")) {
-            String sort = "asc";
-            if (args.length > 2 && args[1].equals("--sort")) {
-                sort = args[2];
-            }
-            handlePokedex(sort);
-
-        } else if (command.equals("info")) {
-            if (args.length < 2) {
-                System.out.println("Usage: info <name>");
-                System.exit(1);
-            }
-            handleInfo(args[1]);
-
-        } else {
-            System.out.println("Unknown command: " + command);
-            printHelp();
-            System.exit(1);
+        if(args.length >= 4){
+            System.out.println(("Too many arguments!"));
+            return;
         }
+
+        Database.init();
+        handleArguments(args);
     }
 
     private static void handleList(int page) {
@@ -93,6 +44,7 @@ public class Main {
     }
 
     private static void handleSearch(String query) {
+        query = query.trim();
         System.out.println("Searching for: " + query);
         List<Pokemon> results = client.searchPokemon(query);
 
@@ -108,11 +60,16 @@ public class Main {
     }
 
     private static void handleAdd(String name) {
-        System.out.println("Looking up " + name + "...");
-        Pokemon p = client.fetchPokemon(name);
+        String trimmedName = name.trim();
+        System.out.println("Looking up " + trimmedName + "...");
+        Pokemon p = cache.stream().filter(poke -> poke.getName().equalsIgnoreCase(trimmedName)).findFirst().orElse(null);
+        if(p == null)
+           p = client.fetchPokemon(trimmedName);
+
+        cache.add(p);
 
         if (p == null) {
-            System.out.println("Pokemon '" + name + "' not found.");
+            System.out.println("Pokemon '" + trimmedName + "' not found.");
             return;
         }
 
@@ -120,10 +77,12 @@ public class Main {
     }
 
     private static void handleRemove(String name) {
-        Database.remove(name);
+        Database.remove(name.trim().toLowerCase());
     }
 
     private static void handlePokedex(String sort) {
+        sort = sort.trim();
+
         List<Pokemon> pokedex = Database.getAll(sort);
 
         if (pokedex.isEmpty()) {
@@ -139,19 +98,24 @@ public class Main {
     }
 
     private static void handleInfo(String name) {
-        System.out.println("Fetching info for: " + name);
-        Pokemon p = client.fetchPokemon(name);
+        String trimmedName = name.trim();
+        System.out.println("Fetching info for: " + trimmedName);
+        Pokemon p = cache.stream().filter(poke -> poke.getName().equalsIgnoreCase(trimmedName)).findFirst().orElse(null);
+        if(p == null)
+            p = client.fetchPokemon(trimmedName);
+
+        cache.add(p);
 
         if (p == null) {
-            System.out.println("Pokemon '" + name + "' not found.");
+            System.out.println("Pokemon '" + trimmedName + "' not found.");
             return;
         }
 
-        System.out.println("\n--- " + p.name.toUpperCase() + " ---");
-        System.out.println("Height : " + p.height);
-        System.out.println("Weight : " + p.weight);
-        System.out.println("Types  : " + p.types);
-        System.out.println("Base XP: " + p.baseExperience);
+        System.out.println("\n--- " + p.getName().toUpperCase() + " ---");
+        System.out.println("Height : " + p.getHeight());
+        System.out.println("Weight : " + p.getWeight());
+        System.out.println("Types  : " + p.getTypes());
+        System.out.println("Base XP: " + p.getBaseExperience());
         System.out.println("Raw    : " + p.toString());
     }
 
@@ -163,26 +127,94 @@ public class Main {
         System.out.println("  remove <name>             Remove from Pokedex");
         System.out.println("  pokedex [--sort asc|desc] Show your Pokedex");
         System.out.println("  info <name>               Show Pokemon details");
+        System.out.println("  Interactive               Launch interactive mode");
     }
 
     private static void dumpCache() {
         System.out.println("Cache dump:");
         for (Pokemon p : cache) {
             System.out.println(p);
+            cache.remove(p);
         }
     }
 
-    /*
-     * TODO: implement interactive mode
-     *
-     * public static void runInteractive() {
-     *     Scanner scanner = new Scanner(System.in);
-     *     while (true) {
-     *         System.out.print("> ");
-     *         String line = scanner.nextLine();
-     *         if (line.equals("exit")) break;
-     *         // parse and dispatch...
-     *     }
-     * }
-     */
+    private static void handleArguments(String[] args){
+        String command = args[0].trim();
+
+        if (command.equalsIgnoreCase("list")) {
+            int page = 1;
+            if (args.length > 2 && args[1].equalsIgnoreCase("--page")) {
+                try {
+                    page = Integer.parseInt(args[2]);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid page number");
+                    System.exit(1);
+                }
+            }else if(args.length == 2){
+                System.out.println("Missing page number or '--page' argument.");
+            }
+            handleList(page);
+
+        } else if (command.equalsIgnoreCase("search")) {
+            if (args.length < 2) {
+                System.out.println("Usage: search <name>");
+                System.exit(1);
+            }
+            handleSearch(args[1]);
+
+        } else if (command.equalsIgnoreCase("add")) {
+            if (args.length < 2) {
+                System.out.println("Usage: add <name>");
+                System.exit(1);
+            }
+            handleAdd(args[1]);
+
+        } else if (command.equalsIgnoreCase("remove")) {
+            if (args.length < 2) {
+                System.out.println("Usage: remove <name>");
+                System.exit(1);
+            }
+            handleRemove(args[1]);
+
+        } else if (command.equalsIgnoreCase("pokedex")) {
+            String sort = "asc";
+            if (args.length > 2 && args[1].equalsIgnoreCase("--sort"))
+                if(args[2].equalsIgnoreCase("asc") || args[2].equalsIgnoreCase("desc"))
+                    sort = args[2];
+
+            handlePokedex(sort);
+
+        } else if (command.equalsIgnoreCase("info")) {
+            if (args.length < 2) {
+                System.out.println("Missing Pokemon name!");
+                System.out.println("Usage: info <name>");
+                System.exit(1);
+            }
+            handleInfo(args[1]);
+
+        } else if (command.equalsIgnoreCase("interactive")){
+            runInteractive();
+        }
+        else {
+            System.out.println("Unknown command: " + command);
+            printHelp();
+            System.exit(1);
+        }
+    }
+
+
+    public static void runInteractive() {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.print("> ");
+            String line = scanner.nextLine().trim();
+            if (line.equalsIgnoreCase("exit")) break;
+            else if(line.equalsIgnoreCase("interactive")){
+                System.out.println("Already in interactive mode!");
+                System.out.println("> ");
+            }else
+                handleArguments(line.split(" "));
+        }
+    }
+
 }

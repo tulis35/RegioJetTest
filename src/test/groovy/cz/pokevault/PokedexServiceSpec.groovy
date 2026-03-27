@@ -11,28 +11,28 @@ class PokedexServiceSpec extends Specification {
     def "adding a pokemon should make it appear in the pokedex"() {
         given:
         Pokemon pokemon = new Pokemon()
-        pokemon.name = "bulbasaur"
-        pokemon.height = 7
-        pokemon.weight = 69
-        pokemon.types = "grass,poison"
-        pokemon.baseExperience = 64
+        pokemon.setName("bulbasaur")
+        pokemon.setHeight(7)
+        pokemon.setWeight(69)
+        pokemon.setTypes("grass,poison")
+        pokemon.setBaseExperience(64)
 
         when:
         Database.save(pokemon)
         List<Pokemon> result = Database.getAll("asc")
 
         then:
-        result.any { it.name == "bulbasaur" }
+        result.any { it.getName() == "bulbasaur" }
     }
 
     def "removing a pokemon should remove it from the pokedex"() {
         given:
         Pokemon pokemon = new Pokemon()
-        pokemon.name = "squirtle"
-        pokemon.height = 5
-        pokemon.weight = 90
-        pokemon.types = "water"
-        pokemon.baseExperience = 63
+        pokemon.setName("squirtle")
+        pokemon.setHeight(5)
+        pokemon.setWeight(90)
+        pokemon.setTypes("water")
+        pokemon.setBaseExperience(63)
         Database.save(pokemon)
 
         when:
@@ -40,6 +40,6 @@ class PokedexServiceSpec extends Specification {
         List<Pokemon> result = Database.getAll("asc")
 
         then:
-        !result.any { it.name == "squirtle" }
+        !result.any { it.getName() == "squirtle" }
     }
 }

@@ -11,11 +11,11 @@ class PokedexIntegrationSpec extends Specification {
     def "findByName should return result"() {
         given:
         Pokemon p = new Pokemon()
-        p.name = "pikachu"
-        p.height = 4
-        p.weight = 60
-        p.types = "electric"
-        p.baseExperience = 112
+        p.setName("pikachu")
+        p.setHeight(4)
+        p.setWeight(60)
+        p.setTypes("electric")
+        p.setBaseExperience(112)
         Database.save(p)
 
         when:
@@ -29,11 +29,11 @@ class PokedexIntegrationSpec extends Specification {
         given:
         ["zangoose", "abra", "machop"].each { name ->
             Pokemon p = new Pokemon()
-            p.name = name
-            p.height = 1
-            p.weight = 1
-            p.types = "normal"
-            p.baseExperience = 50
+            p.setName(name)
+            p.setHeight(1)
+            p.setWeight(1)
+            p.setTypes("normal")
+            p.setBaseExperience(50)
             Database.save(p)
         }
 
