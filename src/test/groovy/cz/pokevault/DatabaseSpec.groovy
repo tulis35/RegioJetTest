@@ -7,20 +7,20 @@ class DatabaseSpec extends Specification {
     def setup() {
         Database.init()
         Pokemon p = new Pokemon()
-        p.name = "bulbasaur"
-        p.height = 7
-        p.weight = 69
-        p.types = "grass,poison"
-        p.baseExperience = 64
+        p.setName("bulbasaur")
+        p.setHeight(7)
+        p.setWeight(69)
+        p.setTypes("grass,poison")
+        p.setBaseExperience(64)
         Database.save(p)
     }
 
-    def "findById should return correct pokemon"() {
+    def "findByName should return correct pokemon"() {
         when:
-        Pokemon result = Database.findById(1)
+        Pokemon result = Database.findByName("bulbasaur")
 
         then:
         result != null
-        result.name == "bulbasaur"
+        result.getName() == "bulbasaur"
     }
 }
