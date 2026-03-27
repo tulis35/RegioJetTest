@@ -23,10 +23,10 @@ public class Pokemon {
 
     public Pokemon(int id, String name, int height, int weight, String types, int baseExperience){
         this.id = id;
-        this.name = name.trim();
+        this.name = (name == null) ? "" : name.trim();
         this.height = (height < 0) ? 0 : height;
         this.weight = (weight < 0) ? 0 : weight;
-        this.types = types.trim();
+        this.types = (types == null) ? "" : types.trim();
         this.baseExperience = (baseExperience < 0) ? 0 : baseExperience;
     }
 
