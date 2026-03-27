@@ -62,7 +62,7 @@ public class Main {
     private static void handleAdd(String name) {
         String trimmedName = name.trim();
         System.out.println("Looking up " + trimmedName + "...");
-        Pokemon p = cache.stream().filter(poke -> poke.name.equalsIgnoreCase(trimmedName)).findFirst().orElse(null);
+        Pokemon p = cache.stream().filter(poke -> poke.getName().equalsIgnoreCase(trimmedName)).findFirst().orElse(null);
         if(p == null)
            p = client.fetchPokemon(trimmedName);
 
@@ -100,7 +100,7 @@ public class Main {
     private static void handleInfo(String name) {
         String trimmedName = name.trim();
         System.out.println("Fetching info for: " + trimmedName);
-        Pokemon p = cache.stream().filter(poke -> poke.name.equalsIgnoreCase(trimmedName)).findFirst().orElse(null);
+        Pokemon p = cache.stream().filter(poke -> poke.getName().equalsIgnoreCase(trimmedName)).findFirst().orElse(null);
         if(p == null)
             p = client.fetchPokemon(trimmedName);
 
@@ -111,11 +111,11 @@ public class Main {
             return;
         }
 
-        System.out.println("\n--- " + p.name.toUpperCase() + " ---");
-        System.out.println("Height : " + p.height);
-        System.out.println("Weight : " + p.weight);
-        System.out.println("Types  : " + p.types);
-        System.out.println("Base XP: " + p.baseExperience);
+        System.out.println("\n--- " + p.getName().toUpperCase() + " ---");
+        System.out.println("Height : " + p.getHeight());
+        System.out.println("Weight : " + p.getWeight());
+        System.out.println("Types  : " + p.getTypes());
+        System.out.println("Base XP: " + p.getBaseExperience());
         System.out.println("Raw    : " + p.toString());
     }
 

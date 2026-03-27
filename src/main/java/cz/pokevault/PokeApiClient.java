@@ -62,16 +62,16 @@ public class PokeApiClient {
             if(root != null && !root.get("name").asText().isEmpty()) {
 
                 Pokemon p = new Pokemon();
-                p.name = root.get("name").asText();
-                p.height = root.get("height").asInt();
-                p.weight = root.get("weight").asInt();
-                p.baseExperience = root.get("base_experience").asInt();
+                p.setName(root.get("name").asText());
+                p.setHeight(root.get("height").asInt());
+                p.setWeight(root.get("weight").asInt());
+                p.setBaseExperience(root.get("base_experience").asInt());
 
                 List<String> typeList = new ArrayList<>();
                 for (JsonNode typeNode : root.get("types")) {
                     typeList.add(typeNode.get("type").get("name").asText());
                 }
-                p.types = String.join(",", typeList);
+                p.setTypes(String.join(",", typeList));
 
                 return p;
             }else

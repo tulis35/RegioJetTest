@@ -29,7 +29,7 @@ public class Database {
     }
 
     public static void save(Pokemon p) {
-        if(p == null || p.name == null || p.name.isEmpty())
+        if(p == null || p.getName() == null || p.getName().isEmpty())
         {
             System.out.println("Invalid Pokemon parameters!");
             return;
@@ -42,25 +42,25 @@ public class Database {
 
             String sql;
             PreparedStatement stmt = null;
-            if(findByName(p.name) != null) {
+            if(findByName(p.getName()) != null) {
                 sql = "UPDATE pokedex SET height = ?, weight = ?, types = ?, base_experience = ? WHERE name = ?";
                 stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, p.height);
-                stmt.setInt(2, p.weight);
-                stmt.setString(3, p.types);
-                stmt.setInt(4, p.baseExperience);
-                stmt.setString(5, p.name);
+                stmt.setInt(1, p.getHeight());
+                stmt.setInt(2, p.getWeight());
+                stmt.setString(3, p.getTypes());
+                stmt.setInt(4, p.getBaseExperience());
+                stmt.setString(5, p.getName());
             }else {
                 sql = "INSERT INTO pokedex (name, height, weight, types, base_experience) VALUES (?,?,?,?,?)";
                 stmt = conn.prepareStatement(sql);
-                stmt.setString(1, p.name);
-                stmt.setInt(2, p.height);
-                stmt.setInt(3, p.weight);
-                stmt.setString(4, p.types);
-                stmt.setInt(5, p.baseExperience);
+                stmt.setString(1, p.getName());
+                stmt.setInt(2, p.getHeight());
+                stmt.setInt(3, p.getWeight());
+                stmt.setString(4, p.getTypes());
+                stmt.setInt(5, p.getBaseExperience());
             }
             stmt.execute();
-            System.out.println("Added " + p.name + " to your Pokedex!");
+            System.out.println("Added " + p.getName() + " to your Pokedex!");
         } catch (Exception e) {
             System.out.println("Failed to save Pokemon to database: " + e.getMessage());
         }
@@ -117,12 +117,12 @@ public class Database {
                 ResultSet rs = conn.createStatement().executeQuery(sql);
                 while (rs.next()) {
                     Pokemon p = new Pokemon();
-                    p.id = rs.getInt("id");
-                    p.name = rs.getString("name");
-                    p.height = rs.getInt("height");
-                    p.weight = rs.getInt("weight");
-                    p.types = rs.getString("types");
-                    p.baseExperience = rs.getInt("base_experience");
+                    p.setId(rs.getInt("id"));
+                    p.setName(rs.getString("name"));
+                    p.setHeight(rs.getInt("height"));
+                    p.setWeight(rs.getInt("weight"));
+                    p.setTypes(rs.getString("types"));
+                    p.setBaseExperience(rs.getInt("base_experience"));
                     list.add(p);
                 }
                 rs.close();
@@ -153,12 +153,12 @@ public class Database {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 Pokemon p = new Pokemon();
-                p.id = rs.getInt("id");
-                p.name = rs.getString("name");
-                p.height = rs.getInt("height");
-                p.weight = rs.getInt("weight");
-                p.types = rs.getString("types");
-                p.baseExperience = rs.getInt("base_experience");
+                p.setId(rs.getInt("id"));
+                p.setName(rs.getString("name"));
+                p.setHeight(rs.getInt("height"));
+                p.setWeight(rs.getInt("weight"));
+                p.setTypes(rs.getString("types"));
+                p.setBaseExperience(rs.getInt("base_experience"));
                 rs.close();
                 return p;
             }

@@ -5,12 +5,78 @@ import java.sql.DriverManager;
 
 public class Pokemon {
 
-    public int id;
-    public String name;
-    public int height;
-    public int weight;
-    public String types;
-    public int baseExperience;
+    private int id ;
+    private String name;
+    private int height;
+    private int weight;
+    private String types;
+    private int baseExperience;
+
+    public Pokemon(){
+        id = -1;
+        name = "";
+        height = 0;
+        weight = 0;
+        types = "";
+        baseExperience = 0;
+    }
+
+    public Pokemon(int id, String name, int height, int weight, String types, int baseExperience){
+        this.id = -1;
+        this.name = "";
+        this.height = 0;
+        this.weight = 0;
+        this.types = "";
+        this.baseExperience = 0;
+    }
+
+    public int getId(){
+        return this.id;
+    }
+
+    public String getName(){
+        return this.name;
+    }
+
+    public int getHeight(){
+        return this.height;
+    }
+
+    public int getWeight(){
+        return this.weight;
+    }
+
+    public String getTypes(){
+        return this.types;
+    }
+
+    public int getBaseExperience(){
+        return this.baseExperience;
+    }
+
+    public void setId(int value){
+        this.id = value;
+    }
+
+    public void setName(String value){
+        this.name = (value == null) ? "" : value;
+    }
+
+    public void setHeight(int value){
+        this.height = (value < 0) ? 0 : value;
+    }
+
+    public void setWeight(int value){
+        this.weight = (value < 0) ? 0 : value;
+    }
+
+    public void setTypes(String value){
+        this.types = (value == null) ? "" : value;
+    }
+
+    public void setBaseExperience(int value){
+        this.baseExperience = (value < 0) ? 0 : value;
+    }
 
     public String formatForDisplay() {
         return String.format("%-16s | Height: %5d | Weight: %5d | Types: %-20s | XP: %d",
