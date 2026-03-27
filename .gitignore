@@ -361,3 +361,21 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/target/original-pokevault-1.0-SNAPSHOT.jar
+/target/pokevault-1.0-SNAPSHOT.jar
+/target/classes/cz/pokevault/Database.class
+/target/classes/cz/pokevault/Main.class
+/target/classes/cz/pokevault/PokeApiClient.class
+/target/classes/cz/pokevault/Pokemon.class
+/target/generated-sources/annotations/
+/target/generated-test-sources/test-annotations/
+/target/maven-archiver/pom.properties
+/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst
+/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst
+/target/test-classes/cz/pokevault/DatabaseSpec.class
+/target/test-classes/cz/pokevault/PokeApiClientSpec.class
+/target/test-classes/cz/pokevault/PokedexIntegrationSpec.class
+/target/test-classes/cz/pokevault/PokedexServiceSpec.class
+/target/test-classes/cz/pokevault/PokemonSpec.class
